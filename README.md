@@ -4,10 +4,10 @@
 Excercise1
 
 
-    query
-    select customerName, salesRepEmployeeNumber, customers.city, employees.officeCode, employees.employeeNumber 
-    from customers, offices, employees where salesRepEmployeeNumber=employeeNumber and employees.officeCode=offices.officeCode
-    group by customerName;
+            query
+            select customerName, salesRepEmployeeNumber, customers.city, employees.officeCode, employees.employeeNumber 
+            from customers, offices, employees where salesRepEmployeeNumber=employeeNumber and employees.officeCode=offices.officeCode
+            group by customerName;
 
 https://github.com/youe73/DatabaseAssignment6/blob/master/fig1.png
 
@@ -16,47 +16,47 @@ The illustrated Excecution plan is showing one red table offices that has a full
 Excercise2
 Changing the order did not improve the performance. The table offices is searched by primary key so it is a default index. Generally one can improve performance by creating an index to keep the cost low. The relevant columns had pre-created indexes. The columns employeeNumber, reportsTo and officeCode has indexes hence why the performance is low cost. 
 
-select 
-customerName, salesRepEmployeeNumber, customers.city, employees.officeCode, employees.employeeNumber
-from offices, employees,customers
-where offices.officeCode = employees.officeCode  
-and salesRepEmployeeNumber=employeeNumber
-group by customerName;
+            select 
+            customerName, salesRepEmployeeNumber, customers.city, employees.officeCode, employees.employeeNumber
+            from offices, employees,customers
+            where offices.officeCode = employees.officeCode  
+            and salesRepEmployeeNumber=employeeNumber
+            group by customerName;
 
-select reportsTo, officeCode from employees;
-select officeCode from offices;
+            select reportsTo, officeCode from employees;
+            select officeCode from offices;
 
-SELECT customerName, salesRepEmployeeNumber, customers.city, employees.officeCode, employees.employeeNumber
-FROM employees , offices,  customers USE INDEX(salesRepEmployeeNumber)
-where employees.officeCode=offices.officeCode
-and salesRepEmployeeNumber=employeeNumber  
-group by customerName;
+            SELECT customerName, salesRepEmployeeNumber, customers.city, employees.officeCode, employees.employeeNumber
+            FROM employees , offices,  customers USE INDEX(salesRepEmployeeNumber)
+            where employees.officeCode=offices.officeCode
+            and salesRepEmployeeNumber=employeeNumber  
+            group by customerName;
 
 Excercise3
 
-/*group by*/
-select (quantityOrdered * priceEach) as sale, offices.officeCode, offices.country, offices.state, amount, 
-MAX(amount) as maxpayment
-from orderdetails, orders, customers, employees, offices, payments
-where orderdetails.orderNumber = orders.orderNumber
-and orders.customerNumber = customers.customerNumber
-and salesRepEmployeeNumber = employeeNumber
-and payments.customerNumber = customers.customerNumber 
-and employees.officeCode = offices.officeCode 
-group by offices.officeCode order by sale desc;
+            /*group by*/
+            select (quantityOrdered * priceEach) as sale, offices.officeCode, offices.country, offices.state, amount, 
+            MAX(amount) as maxpayment
+            from orderdetails, orders, customers, employees, offices, payments
+            where orderdetails.orderNumber = orders.orderNumber
+            and orders.customerNumber = customers.customerNumber
+            and salesRepEmployeeNumber = employeeNumber
+            and payments.customerNumber = customers.customerNumber 
+            and employees.officeCode = offices.officeCode 
+            group by offices.officeCode order by sale desc;
 
 
-/*windowing*/
-select 
-(quantityOrdered*priceEach), priceEach, SUM(priceEach)OVER (PARTITION BY offices.officeCode)total, offices.country, 
-offices.state, amount, offices.officeCode,
-MAX(amount) OVER (PARTITION BY offices.officeCode) maxpayment
-from orderdetails, orders, customers, employees, offices, payments
-where orderdetails.orderNumber = orders.orderNumber
-and orders.customerNumber = customers.customerNumber
-and salesRepEmployeeNumber = employeeNumber
-and payments.customerNumber = customers.customerNumber 
-and employees.officeCode = offices.officeCode; 
+            /*windowing*/
+            select 
+            (quantityOrdered*priceEach), priceEach, SUM(priceEach)OVER (PARTITION BY offices.officeCode)total, offices.country, 
+            offices.state, amount, offices.officeCode,
+            MAX(amount) OVER (PARTITION BY offices.officeCode) maxpayment
+            from orderdetails, orders, customers, employees, offices, payments
+            where orderdetails.orderNumber = orders.orderNumber
+            and orders.customerNumber = customers.customerNumber
+            and salesRepEmployeeNumber = employeeNumber
+            and payments.customerNumber = customers.customerNumber 
+            and employees.officeCode = offices.officeCode; 
 
 
 
@@ -79,28 +79,28 @@ The cost for windowing is significantly higher than the group query. Group query
 Exercise 4
 With joins
 
-use stackoverflow;
+            use stackoverflow;
 
-SHOW INDEX FROM posts;
-SHOW INDEX FROM comments;
-SHOW INDEX FROM users;
+            SHOW INDEX FROM posts;
+            SHOW INDEX FROM comments;
+            SHOW INDEX FROM users;
 
-DROP procedure IF EXISTS `textsearch`;
-DELIMITER $$
-CREATE PROCEDURE `textsearch` ()
-BEGIN
-select Title, DisplayName, OwnerUserId from posts, users, comments
-where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
-END$$
-DELIMITER ;
+            DROP procedure IF EXISTS `textsearch`;
+            DELIMITER $$
+            CREATE PROCEDURE `textsearch` ()
+            BEGIN
+            select Title, DisplayName, OwnerUserId from posts, users, comments
+            where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
+            END$$
+            DELIMITER ;
 
-call textsearch();
+            call textsearch();
 
-select Title, DisplayName, OwnerUserId from posts, users, comments
-where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
+            select Title, DisplayName, OwnerUserId from posts, users, comments
+            where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
 
-select Title, users.Id, Text, OwnerUserId from posts, users, comments
-where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
+            select Title, users.Id, Text, OwnerUserId from posts, users, comments
+            where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
 
  https://github.com/youe73/DatabaseAssignment6/blob/master/fig4.png
  
@@ -111,28 +111,28 @@ In natural language full text search the search is done by relevance. This metho
 The Boolean text search and the full text search in this example are very low cost and effective.
 
  
-Alter table posts ADD FULLTEXT (Title);
+            Alter table posts ADD FULLTEXT (Title);
 
-DROP procedure IF EXISTS `fulltextsearch`;
-DELIMITER $$
-CREATE PROCEDURE `fulltextsearch` (keyword varchar(100))
-BEGIN
-Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST (keyword)
-and posts.Id = comments.PostId and users.Id = OwnerUserId;
-END$$
-DELIMITER ;
+            DROP procedure IF EXISTS `fulltextsearch`;
+            DELIMITER $$
+            CREATE PROCEDURE `fulltextsearch` (keyword varchar(100))
+            BEGIN
+            Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST (keyword)
+            and posts.Id = comments.PostId and users.Id = OwnerUserId;
+            END$$
+            DELIMITER ;
 
-call fulltextsearch('grounds');
-call fulltextsearch('coffee');
-call fulltextsearch('should');
+            call fulltextsearch('grounds');
+            call fulltextsearch('coffee');
+            call fulltextsearch('should');
 
-Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee')
-and posts.Id = comments.PostId and users.Id = OwnerUserId;
+            Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee')
+            and posts.Id = comments.PostId and users.Id = OwnerUserId;
 
-Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee' in boolean mode)
-and posts.Id = comments.PostId and users.Id = OwnerUserId;
+            Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee' in boolean mode)
+            and posts.Id = comments.PostId and users.Id = OwnerUserId;
 
-https://github.com/youe73/DatabaseAssignment6/blob/master/fig5.png
+            https://github.com/youe73/DatabaseAssignment6/blob/master/fig5.png
 
 
 
