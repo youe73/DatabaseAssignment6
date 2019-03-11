@@ -102,6 +102,7 @@ where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = Owner
 select Title, users.Id, Text, OwnerUserId from posts, users, comments
 where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
 
+ https://github.com/youe73/DatabaseAssignment6/blob/master/fig4.png
  
 Using joins with UserId instead of DisplayUsername has no real difference as mysql will not be affected much by use of joins. There might be one full scan table but the other joins will not cost much due to not performing full scan for the joined tables.  
 
@@ -110,6 +111,27 @@ In natural language full text search the search is done by relevance. This metho
 The Boolean text search and the full text search in this example are very low cost and effective.
 
  
+Alter table posts ADD FULLTEXT (Title);
+
+DROP procedure IF EXISTS `fulltextsearch`;
+DELIMITER $$
+CREATE PROCEDURE `fulltextsearch` (keyword varchar(100))
+BEGIN
+Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST (keyword)
+and posts.Id = comments.PostId and users.Id = OwnerUserId;
+END$$
+DELIMITER ;
+
+call fulltextsearch('grounds');
+call fulltextsearch('coffee');
+call fulltextsearch('should');
+
+Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee')
+and posts.Id = comments.PostId and users.Id = OwnerUserId;
+
+Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee' in boolean mode)
+and posts.Id = comments.PostId and users.Id = OwnerUserId;
+
 
 
 
