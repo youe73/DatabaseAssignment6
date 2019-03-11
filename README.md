@@ -32,14 +32,46 @@ where employees.officeCode=offices.officeCode
 and salesRepEmployeeNumber=employeeNumber  
 group by customerName;
 
+Excercise3
+
+/*group by*/
+select (quantityOrdered * priceEach) as sale, offices.officeCode, offices.country, offices.state, amount, 
+MAX(amount) as maxpayment
+from orderdetails, orders, customers, employees, offices, payments
+where orderdetails.orderNumber = orders.orderNumber
+and orders.customerNumber = customers.customerNumber
+and salesRepEmployeeNumber = employeeNumber
+and payments.customerNumber = customers.customerNumber 
+and employees.officeCode = offices.officeCode 
+group by offices.officeCode order by sale desc;
+
+
+/*windowing*/
+select 
+(quantityOrdered*priceEach), priceEach, SUM(priceEach)OVER (PARTITION BY offices.officeCode)total, offices.country, 
+offices.state, amount, offices.officeCode,
+MAX(amount) OVER (PARTITION BY offices.officeCode) maxpayment
+from orderdetails, orders, customers, employees, offices, payments
+where orderdetails.orderNumber = orders.orderNumber
+and orders.customerNumber = customers.customerNumber
+and salesRepEmployeeNumber = employeeNumber
+and payments.customerNumber = customers.customerNumber 
+and employees.officeCode = offices.officeCode; 
+
+
+
 
 The execution plan is for GROUP BY query.
 
+
+
+https://github.com/youe73/DatabaseAssignment6/blob/master/fig2.png
  
  
 For windowing
  
 The cost for windowing is significantly higher than the group query. Group query is not very expensive and if one 
+
 
 
 Exercise 4
