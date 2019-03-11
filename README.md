@@ -10,7 +10,6 @@ Excercise1
     group by customerName;
 
 
-
 The illustrated Excecution plan is showing one red table offices that has a full scan which is costly (even it is only 7 rows) as it has to search through all the elements in the table. The employees and customers table has archived a very low costs performance as it only had to go through 3 and 7 rows. The total cost is 39.80 with 175 rows and the GROUP operations is insignificant in this situation. The main issue is the office table performing a full scan search.  
 
 Excercise2
