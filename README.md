@@ -70,12 +70,38 @@ https://github.com/youe73/DatabaseAssignment6/blob/master/fig2.png
  
 For windowing
  
+ https://github.com/youe73/DatabaseAssignment6/blob/master/fig3.png
+ 
 The cost for windowing is significantly higher than the group query. Group query is not very expensive and if one 
 
 
 
 Exercise 4
 With joins
+
+use stackoverflow;
+
+SHOW INDEX FROM posts;
+SHOW INDEX FROM comments;
+SHOW INDEX FROM users;
+
+DROP procedure IF EXISTS `textsearch`;
+DELIMITER $$
+CREATE PROCEDURE `textsearch` ()
+BEGIN
+select Title, DisplayName, OwnerUserId from posts, users, comments
+where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
+END$$
+DELIMITER ;
+
+call textsearch();
+
+select Title, DisplayName, OwnerUserId from posts, users, comments
+where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
+
+select Title, users.Id, Text, OwnerUserId from posts, users, comments
+where Title LIKE '%grounds%' and posts.Id = comments.PostId and users.Id = OwnerUserId;
+
  
 Using joins with UserId instead of DisplayUsername has no real difference as mysql will not be affected much by use of joins. There might be one full scan table but the other joins will not cost much due to not performing full scan for the joined tables.  
 
