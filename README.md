@@ -132,7 +132,7 @@ and posts.Id = comments.PostId and users.Id = OwnerUserId;
 Select Title, OwnerUserId, users.Id from posts, users, comments where match(Title) AGAINST ('coffee' in boolean mode)
 and posts.Id = comments.PostId and users.Id = OwnerUserId;
 
-
+https://github.com/youe73/DatabaseAssignment6/blob/master/fig5.png
 
 
 
